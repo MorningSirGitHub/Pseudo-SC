@@ -53,6 +53,7 @@ void Rename(json &base) {
 	}
 }
 
+//copy zh code-point to zh_hant code point
 void Remap(json &base) {
 	auto &cmap = base["cmap"];
 	for (auto &[trad, simp] : OpenCC_T2S) {
