@@ -41,11 +41,11 @@ void Rename(json &base) {
 		case 16:
 		case 18:
 		case 21:
-			nameTuple["nameString"] = std::string(nameTuple["nameString"]) + " (Pseudo-SC)";
+			nameTuple["nameString"] = std::string(nameTuple["nameString"]) + " (MorningSir)";
 			break;
 		case 6:
 		case 20:
-			nameTuple["nameString"] = std::string(nameTuple["nameString"]) + "Pseudo-SC";
+			nameTuple["nameString"] = std::string(nameTuple["nameString"]) + "MorningSir";
 			break;
 		default:
 			break;
@@ -53,10 +53,22 @@ void Rename(json &base) {
 	}
 }
 
-//copy zh code-point to zh_hant code point
+//copy zh code-point to zh_hant code-point
+// void Remap(json &base) {
+// 	auto &cmap = base["cmap"];
+// 	for (auto &[trad, simp] : OpenCC_T2S) {
+// 		auto usimp = std::to_string(simp);
+// 		if (cmap.find(usimp) != cmap.end()) {
+// 			auto utrad = std::to_string(trad);
+// 			cmap[utrad] = cmap[usimp];
+// 		}
+// 	}
+// }
+
+//copy zh_hant code-point to zh code-point
 void Remap(json &base) {
 	auto &cmap = base["cmap"];
-	for (auto &[trad, simp] : OpenCC_T2S) {
+	for (auto &[simp, trad] : OpenCC_T2T) {
 		auto usimp = std::to_string(simp);
 		if (cmap.find(usimp) != cmap.end()) {
 			auto utrad = std::to_string(trad);
