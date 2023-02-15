@@ -12,6 +12,7 @@
 #include <nowide/iostream.hpp>
 
 #include "opencc-t2s.h"
+#include "opencc-s2t.h"
 
 const char *usage = reinterpret_cast<const char *>(u8"用法：\n\t%s font.otd\n");
 const char *loadfilefail = reinterpret_cast<const char *>(u8"读取文件 %s 失败\n");
@@ -54,21 +55,21 @@ void Rename(json &base) {
 }
 
 //copy zh code-point to zh_hant code-point
-// void Remap(json &base) {
-// 	auto &cmap = base["cmap"];
-// 	for (auto &[trad, simp] : OpenCC_T2S) {
-// 		auto usimp = std::to_string(simp);
-// 		if (cmap.find(usimp) != cmap.end()) {
-// 			auto utrad = std::to_string(trad);
-// 			cmap[utrad] = cmap[usimp];
-// 		}
-// 	}
-// }
+void RemapT2S(json &base) {
+	auto &cmap = base["cmap"];
+	for (auto &[trad, simp] : OpenCC_T2S) {
+		auto usimp = std::to_string(simp);
+		if (cmap.find(usimp) != cmap.end()) {
+			auto utrad = std::to_string(trad);
+			cmap[utrad] = cmap[usimp];
+		}
+	}
+}
 
 //copy zh_hant code-point to zh code-point
-void Remap(json &base) {
+void RemapS2T(json &base) {
 	auto &cmap = base["cmap"];
-	for (auto &[simp, trad] : OpenCC_T2T) {
+	for (auto &[simp, trad] : OpenCC_S2T) {
 		auto usimp = std::to_string(simp);
 		if (cmap.find(usimp) != cmap.end()) {
 			auto utrad = std::to_string(trad);
@@ -81,7 +82,7 @@ int main(int argc, char *u8argv[]) {
 	static char u8buffer[4096];
 	nowide::args _{argc, u8argv};
 
-	if (argc != 2) {
+	if (argc != 3) {
 		snprintf(u8buffer, sizeof u8buffer, usage, u8argv[0]);
 		nowide::cout << u8buffer << std::endl;
 		return EXIT_FAILURE;
@@ -97,7 +98,12 @@ int main(int argc, char *u8argv[]) {
 	}
 
 	Rename(base);
-	Remap(base);
+	if (std::string(u8argv[2]) == "0") {
+		RemapS2T(base);
+	}
+	else {
+		RemapT2S(base);
+	}
 
 	std::string out = base.dump();
 	FILE *outfile = nowide::fopen(u8argv[1], "wb");

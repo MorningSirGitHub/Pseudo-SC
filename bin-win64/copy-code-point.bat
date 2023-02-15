@@ -3,8 +3,10 @@
 %~d0
 cd %~dp0
 
+set /a langType = 0
 set /a inputNum = 0
 set /a processNum = 0
+set /p langType=please input the convet type  [32m0-[zh_Hant][0m(default) or [31m1-[zh][0m:
 
 for %%i in (%*) do call :Processing %%i
 
@@ -39,7 +41,7 @@ goto :EOF
 	
 	if %ERRORLEVEL% NEQ 0 goto :EOF
 
-	.\pseudo-sc.exe temp.json
+	.\pseudo-sc.exe temp.json %langType%
 
 	.\otfccbuild.exe -q -O3 -o %~1 temp.json
 
