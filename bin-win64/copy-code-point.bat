@@ -3,10 +3,11 @@
 %~d0
 cd %~dp0
 
-set /a langType = 0
+call :Choose 10
+
 set /a inputNum = 0
 set /a processNum = 0
-set /p langType=please input the convet type  [32m0-[zh_Hant][0m(default) or [31m1-[zh][0m:
+set /a convertType = %ERRORLEVEL% - 1
 
 for %%i in (%*) do call :Processing %%i
 
@@ -16,6 +17,18 @@ if %processNum% NEQ 0 echo processing complete !
 
 pause
 exit 
+
+:Choose
+
+	echo [33mNOTE:[0m^ Two formats can be converted: [32m[zh_Hant]-Y (default)[0m or [31m[zh]-N[0m
+
+	choice /m "Please select the conversion format:" /c:YN /t %1 /d Y
+
+	if %ERRORLEVEL% EQU 1 goto :EOF
+
+	if %ERRORLEVEL% EQU 2 goto :EOF
+
+goto :Choose
 
 :Default
 
@@ -41,7 +54,7 @@ goto :EOF
 	
 	if %ERRORLEVEL% NEQ 0 goto :EOF
 
-	.\pseudo-sc.exe temp.json %langType%
+	.\pseudo-sc.exe temp.json %convertType%
 
 	.\otfccbuild.exe -q -O3 -o %~1 temp.json
 
